@@ -8,9 +8,6 @@ const myPeer = new Peer(undefined,{
 
 
 
-
-
-
 myPeer.on('open',id=>{
     console.log('myPeer opened')
     socket.emit('join-room',ROOM_ID,id)
@@ -23,19 +20,30 @@ socket.on('open-stream',(clientList,userId)=>{
     
         navigator.mediaDevices.getUserMedia({
             video:true,
-            audio:true
+            audio:false
         }).then(stream=>{
             streamer = stream;
             addVideoStream(myVideo,stream);
-        
-        
-        
+
         })
     }
     else{
-      
-        connectToNewUser(userId,streamer);
+        myPeer.call(userId,streamer)
+        console.log('watcher in')
+       
     }
+
+    myPeer.on('call',call=>{
+        console.log('calling')
+        call.answer(streamer);
+        const video = document.createElement('video')
+        video.muted = true
+        call.on('stream',userVideoStream=>{
+            addVideoStream(video,userVideoStream)
+        })
+    })
+
+   
 
     
 })
