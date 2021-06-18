@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devStart" : "nodemon server.js"
-  }, 
+    "devStart": "nodemon server.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "socket.io": "^3.0.4",
     "uuid": "^8.3.1"
   },
