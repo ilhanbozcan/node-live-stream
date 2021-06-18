@@ -61,29 +61,37 @@ io.on('connection',socket=>{
         if(!started){
             if(userId,io.sockets.adapter.rooms.get(roomId).size > 1){
                 started = true
-                var timeleft = 500;
+                var timeleft = 20;
 
                 var downloadTimer = setInterval(function(){
                   if(timeleft <= 0){
                     clearInterval(downloadTimer);
+                    console.log('canceled')
+                    socket.to(roomId).broadcast.emit('start-timer','canceled')
+                    started = false
                   }
-                    let c =500 - timeleft + ' for next round';
+                    let c =20 - timeleft + ' for next round';
                     console.log(c)
                     socket.to(roomId).broadcast.emit('start-timer',c)
 
                   timeleft -= 1;
+                
                 }, 1000)
+
+               
                 
             }
             else{
                 started = false
+                console.log('canceled')
                 socket.to(roomId).broadcast.emit('start-timer','canceled')
                 clearInterval(downloadTimer);
             }
         }
 
         socket.on('disconnect', () => {
-            socket.to(roomId).broadcast.emit('user-disconnected', userId,io.sockets.adapter.rooms.get(roomId).size)
+            console.log('disconnected')
+            socket.to(roomId).broadcast.emit('user-disconnected', userId,io.sockets.adapter.rooms.get(roomId) ? io.sockets.adapter.rooms.get(roomId) : 0 )
           })
     })
 

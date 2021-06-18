@@ -25,6 +25,8 @@ myPeer.on('open', id => {
 
 var streamer;
 socket.on('open-stream',(clientList,userId)=>{
+  console.log('open-stream geldi')
+  console.log('list',clientList)
   document.getElementById('online').innerHTML= clientList
 
     if(clientList <3 ){
@@ -60,12 +62,14 @@ socket.on('open-stream',(clientList,userId)=>{
       call.on('stream',userVideoStream=>{
           addVideoStream(video,userVideoStream,userId)
       })
+      call.on('close', () => {
+        video.remove()
+      })
+    
+      peers[userId] = call
   })
 
 
-
-
-   
 
     
 })
@@ -79,6 +83,8 @@ socket.on('update-user',count => {
 
 
 socket.on('user-disconnected', (userId,userCount) => {
+  console.log(peers)
+  console.log('disconnectted')
 document.getElementById('online').innerHTML= userCount
 userC = userCount;
   console.log('disconnect',userId)
@@ -125,9 +131,14 @@ socket.on('message-receive',(message,nick)=>{
 
 
 socket.on('start-timer',(c)=>{
- 
+
+  console.log('timer starded')
   if(c != 'canceled'){
-    document.getElementById('counter').innerHTML = c 
+    document.getElementById('counter').innerHTML = c
+  }
+  else if(c == 'canceled'){
+    console.log('canceled')
+    window.location.reload()
   }
   else{
     document.getElementById('counter').innerHTML = "Waiting for client"
