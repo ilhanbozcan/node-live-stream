@@ -39,18 +39,17 @@ var started = false;
 io.on('connection',socket=>{
     socket.on('join-room', (roomId,userId)=>{
 
-        console.log(roomId)
-        console.log(roomId,userId)
+        
         socket.join(roomId);
+        console.log(`user -> ${userId} connected to room ${roomId}` )
+
 
         socket.emit('update-user',io.sockets.adapter.rooms.get(roomId).size)
 
         //
         io.sockets.in(roomId).emit('open-stream',io.sockets.adapter.rooms.get(roomId).size,userId)
 
-        //socket.to(roomId).broadcast.emit('user-connected', userId,io.sockets.adapter.rooms.get(roomId).size)
-        
-        //socket.to(roomId).broadcast.emit('user-connected',userId)
+      
 
         socket.on('send-message',(message,nick)=>{
             console.log(message)
@@ -61,18 +60,18 @@ io.on('connection',socket=>{
         if(!started){
             if(userId,io.sockets.adapter.rooms.get(roomId).size > 1){
                 started = true
-                var timeleft = 20;
+                var timeleft = 180;
 
                 var downloadTimer = setInterval(function(){
                   if(timeleft <= 0){
                     clearInterval(downloadTimer);
                     console.log('canceled')
-                    socket.to(roomId).broadcast.emit('start-timer','canceled')
+                    io.sockets.in(roomId).emit('start-timer','canceled')
                     started = false
                   }
-                    let c =20 - timeleft + ' for next round';
+                    let c =timeleft + ' for next round';
                     console.log(c)
-                    socket.to(roomId).broadcast.emit('start-timer',c)
+                    io.sockets.in(roomId).emit('start-timer',c)
 
                   timeleft -= 1;
                 
@@ -82,16 +81,17 @@ io.on('connection',socket=>{
                 
             }
             else{
-                started = false
-                console.log('canceled')
-                socket.to(roomId).broadcast.emit('start-timer','canceled')
+                console.log('kisi sayısı yetersiz')
+                io.sockets.in(roomId).emit('start-timer','no')
                 clearInterval(downloadTimer);
+                started = false
             }
         }
 
+
         socket.on('disconnect', () => {
             console.log('disconnected')
-            socket.to(roomId).broadcast.emit('user-disconnected', userId,io.sockets.adapter.rooms.get(roomId) ? io.sockets.adapter.rooms.get(roomId) : 0 )
+            socket.to(roomId).broadcast.emit('user-disconnected', userId,io.sockets.adapter.rooms.get(roomId) ? io.sockets.adapter.rooms.get(roomId).size : 0 )
           })
     })
 

@@ -8,8 +8,6 @@ const myPeer = new Peer(undefined, {
 
 document.getElementById('nick').innerHTML= `Welcome ${NICK}`
 
-console.log(document.getElementById("form"))
-
 
 var userC = 1;
 
@@ -25,12 +23,9 @@ myPeer.on('open', id => {
 
 var streamer;
 socket.on('open-stream',(clientList,userId)=>{
-  console.log('open-stream geldi')
-  console.log('list',clientList)
   document.getElementById('online').innerHTML= clientList
 
     if(clientList <3 ){
-      console.log('if girdi')
         const myVideo = document.createElement('video')
         myVideo.muted = true
     
@@ -48,14 +43,11 @@ socket.on('open-stream',(clientList,userId)=>{
 
     }
     else{
-      console.log('else girdi')
         myPeer.call(userId,streamer)
-        console.log('watcher in')
        
     }
 
     myPeer.on('call',call=>{
-      console.log('calling')
       call.answer(streamer);
       const video = document.createElement('video')
       video.muted = true
@@ -83,11 +75,8 @@ socket.on('update-user',count => {
 
 
 socket.on('user-disconnected', (userId,userCount) => {
-  console.log(peers)
-  console.log('disconnectted')
 document.getElementById('online').innerHTML= userCount
 userC = userCount;
-  console.log('disconnect',userId)
 
   if (peers[userId]) peers[userId].close()
 })
@@ -131,17 +120,16 @@ socket.on('message-receive',(message,nick)=>{
 
 
 socket.on('start-timer',(c)=>{
+  console.log('timer',c)
+  if(c == 'no'){
+    document.getElementById('counter').innerHTML = "Waiting for client"
 
-  console.log('timer starded')
-  if(c != 'canceled'){
-    document.getElementById('counter').innerHTML = c
   }
   else if(c == 'canceled'){
-    console.log('canceled')
     window.location.reload()
   }
   else{
-    document.getElementById('counter').innerHTML = "Waiting for client"
+    document.getElementById('counter').innerHTML = c
   }
 })
 
